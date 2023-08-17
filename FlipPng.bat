@@ -16,4 +16,4 @@ set PYTHONPATH=%cd%
 popd
 popd
 
-pause
+::pause
