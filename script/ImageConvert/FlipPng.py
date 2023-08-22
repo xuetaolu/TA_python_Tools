@@ -1,3 +1,5 @@
+import os
+os.environ["OPENCV_IO_ENABLE_OPENEXR"]="1"
 import sys
 # print(sys.path)
 from Tool import CvTool
