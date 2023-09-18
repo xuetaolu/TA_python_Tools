@@ -1,5 +1,6 @@
 import os.path
 import sys
+import math
 
 import numpy
 
@@ -14,7 +15,7 @@ def CsvToPngRGBA( input_file ):
 
     pixel_lines = []
     width = 0
-    PIXEL_BYTE_COUNT = 4
+    PIXEL_BYTE_COUNT = 1
 
     for line_index, l in enumerate(open(input_file)):
         line = l.replace("\n", "").strip()
@@ -30,8 +31,25 @@ def CsvToPngRGBA( input_file ):
             pixel_lines.append([None] * width)
 
             data_strs = line.split(", ")[1:]
-            for row_index, rgba_strs in enumerate( (data_strs[i:i + PIXEL_BYTE_COUNT] for i in range(0, len(data_strs), PIXEL_BYTE_COUNT)) ):  # 列表生成式
-                pixel_rgba = [int(f"0x{v}",0) for v in rgba_strs ]
+            for row_index, float_strs in enumerate( (data_strs[i:i + PIXEL_BYTE_COUNT] for i in range(0, len(data_strs), PIXEL_BYTE_COUNT)) ):  # 列表生成式
+                divs = (256.0**i for i in range(1, 1-4, -1))
+                r_div, g_div, b_div, a_div = divs
+                F32 = float(float_strs[0])
+                remain = F32
+                r = math.floor(remain / r_div )
+                remain -= r * r_div
+                g = math.floor(remain / g_div )
+                remain -= g * g_div
+                b = math.floor(remain / b_div )
+                remain -= b * b_div
+                a = math.floor(remain / a_div )
+                remain -= a * a_div
+
+
+                pixel_rgba = [b, g, r, a] # 颠倒的
+
+                recover_F32 = r * r_div + g * g_div + b * b_div + a * a_div
+
                 # pixel_rgba[3] = 255
                 pixel_lines[-1][row_index] = tuple(pixel_rgba)
                 # r, g, b, a = ( int(f"0x{v}",0) for v in rgba_strs )
